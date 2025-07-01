@@ -1,45 +1,26 @@
 #include<stdio.h>
+#include<sys/wait.h>
 #include<stdlib.h>
 #include<unistd.h>
-#include<sys/wait.h>
-#include<sys/types.h>
-int my_sys(const char *cm){
-if(cm==NULL){
-
-return -1;}
-pid_t pid=fork();
-if(pid==-1){
-printf("error\n");return -1;}
-else if(pid==0){
-execl("/bin/sh","sh","-c",cm,(char *)NULL);
-printf("execerror\n");
-exit(EXIT_FAILURE);
-}
-else{
-int st;
-if(waitpid(pid,&st,0)==-1){
-return -1;}
-if(WIFEXITED(st)){
-return WEXITSTATUS(st);
+int my_sys(const char *command){
+    pid_t pid = fork();
+    if(pid==0){
+        execl("/bin/sh","sh","-c",command,(char *)NULL);
+        printf("Error");
+        exit(127);
+    }else{
+        int status;
+        waitpid(pid,&status,0);
+        if(WIFEXITED(status)){
+            return WEXITSTATUS(status);
+        }
+        return -1;
+    }
 
 }
-
-else{
-return -1;
-}
-}
-}
-
 int main(){
-
-
-printf("executing ls-li\n");
-int res=my_sys("ls -li");
-if(res==-1){
-printf("error\n");
-}
-else{
-printf("exited with status %d\n",res);
-}
-return 0;
+    printf("Running command: ls -l\n");
+    int return_status=my_sys("ls -l");
+    printf("\n command finished with return code: %d\n",return_status);
+    return 0;
 }

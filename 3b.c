@@ -1,20 +1,16 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <dirent.h>
-#include <time.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<dirent.h>
 #include<sys/stat.h>
-int main(int argc,char *argv[]){
-struct dirent *d;
-struct stat m;
-DIR *dp=(argc>1) ? argv[1] : ".";
-dp = opendir(dp);
-if(dp){
-while(d = readdir(dp)){
-stat(d->d_name,&m);
-printf("%ld %o %d %d %s %s\n", m.st_ino, m.st_mode, m.st_uid, m.st_gid,
-
-ctime(&m.st_atime),d->d_name);
-}
-}
+#include <time.h>
+#include<string.h>
+int main(int argc , char* argv[]){
+    struct dirent *dir;
+	struct stat st;
+	DIR *dp=opendir(".");
+    while((dir=readdir(dp))!=NULL){
+        stat(dir->d_name,&st);
+        printf("\n %ld %o %ld %ld %ld %ld %s",(long)st.st_ino,st.st_mode & 0777,(long)st.st_nlink,(long)st.st_uid,(long)st.st_gid,(long)st.st_size,dir->d_name);
+    }
+    return 0;
 }

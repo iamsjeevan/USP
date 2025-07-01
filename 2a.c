@@ -8,7 +8,7 @@ int main(int argc,char *argv[]){
     printf("size: %lld bytes \n", (long long)file_stat.st_size);
     printf("Links: %ld \n",(long) file_stat.st_nlink);
     printf("Permissions: %o \n",file_stat.st_mode & 0777);
-    printf("Last accesstimr: %s", ctime(&file_stat.st_atime));
+    printf("Last access time: %s", ctime(&file_stat.st_atime));
     printf("Ownwers gid:%ld \n uid?:%ld \n",(long)file_stat.st_gid, (long)file_stat.st_uid);
     return 0;
 
