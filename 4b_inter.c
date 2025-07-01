@@ -1,20 +1,15 @@
-#include<stdio.h>
-#include<sys/stat.h>
-#include<sys/types.h>
-#include<unistd.h>
-#include<fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
 int main(){
-pid_t pid=fork();
-if(pid<0){
-printf("error\n");
+    pid_t pid = fork();
+    if(pid ==0){
+        execl("./textinterpreter","textinterpreter","arg1","arg2","arg3",(char *)0);
+         
+    }else{
+        wait(NULL); // Wait for the child process to finish
+        printf("parents saw");
+    }
+    return 0;
 }
-else if(pid==0){
-if(execl("textinterpreter","test","myarg1","myarg2","myarg4",(char *)0)<0)
-printf("error\n");
-
-}
-return 0;
-}
-
-if(waitpid(pid,NULL,0)<0)
-printf("error\n");
