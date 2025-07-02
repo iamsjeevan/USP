@@ -1,49 +1,35 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<errno.h>
 #include<fcntl.h>
+#include<sys/types.h>
+#include<sys/stat.h>
 #include<unistd.h>
 int main(int argc,char *argv[]){
-int fd; char buf[255]; struct flock fv;
-if(argc<2){
-printf("usage %s <filename>\n",argv[0]);
-exit(0);
-}
-if((fd=open(argv[1],O_RDWR))==-1){
-printf("error\n");
-exit(1);
-}
-fv.l_type=F_WRLCK; fv.l_whence=SEEK_END;
-fv.l_start=SEEK_END-100; fv.l_len=100;
-printf("press enter to set lock\n");
+int fd=open(argv[1],O_RDWR|O_CREAT,0644);
+struct flock li;
+li.l_type=F_WRLCK;
+li.l_whence=SEEK_END;
+li.l_start=-100;
+li.l_len=100; // Lock the last 100 bytes
+printf("Locking the last 100 bytes of %s\n", argv[1]);
+printf("just press enter");
 getchar();
-printf("trying to get lock\n");
-if((fcntl(fd,F_SETLK,&fv))==-1){
-fcntl(fd,F_GETLK,&fv);
-printf("file is locked by process pid: %d \n",fv.l_pid);
-return -1;
+if(fcntl(fd,F_SETLK,&li)==-1){
+    fcntl(fd,F_GETLK,&li);
+    printf("the process pid %d is holdin lock by %d \n", getpid(), li.l_pid);
+return 1;
 }
-printf("locked\n");
-if((lseek(fd,SEEK_END-50,SEEK_END))==-1){
-printf("lseek\n");
-exit(1);
-
-}
-if((read(fd,buf,100))==-1){
-printf("read\n");
-exit(1);
-}
-printf("data from file:\n");
-puts(buf);
-printf("press enter to unlock\n");
+printf("locking");
+lseek(fd,-50,SEEK_END);
+char buf[101];
+int bytes_read=read(fd,buf,100);
+buf[bytes_read]='\0'; // Null-terminate the string
+printf("Read from locked region: %s\n", buf);
+printf("just press enter");
 getchar();
-fv.l_type=F_UNLCK; fv.l_whence=SEEK_SET;
-fv.l_start=0; fv.l_len=0;
-if((fcntl(fd,F_UNLCK,&fv))==-1){
-printf("error\n");
-exit(0);
-}
-printf("unlocked\n");
+li.l_type=F_UNLCK; // Unlock the region
+fcntl(fd, F_SETLK, &li);
+printf("Unlocked the last 100 bytes of %s\n", argv[1]);
 close(fd);
 return 0;
 }

@@ -2,15 +2,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 int main(int argc, char *argv[]) {
-if (argc != 2) {
-fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
-exit(EXIT_FAILURE);
-}
-char *filename = argv[1];
-if (access(filename, F_OK) == 0) {
-printf("File '%s' exists and can be accessed.\n", filename);
+char* file_name = argv[1];
+if(access(file_name, F_OK)==0){
+    printf("File %s exists.\n", file_name);
 } else {
-printf("File '%s' does not exist or cannot be accessed.\n", filename);
+    printf("File %s does not exist.\n", file_name);
+    exit(EXIT_FAILURE);
 }
-return 0;
 }

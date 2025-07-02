@@ -3,22 +3,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 int main() {
-mode_t new_umask = 0022;
-mode_t old_umask;
-const char *file_path = "t1.txt";
-mode_t new_mode = 0644;
-old_umask = umask(new_umask);
-printf("Old umask was: %03o, new umask is: %03o\n", old_umask, new_umask);
-int fd = open(file_path, O_CREAT | O_WRONLY, 0777);
-if (fd == -1) {
-perror("open");
-return 1;
-}
-close(fd);
-if (chmod(file_path, new_mode) == -1) {
-perror("chmod");
-return 1;
-}
-printf("Changed permissions of %s to %03o\n", file_path, new_mode);
-return 0;
+    const char* file_path = "example.txt";
+    umask(0022);
+    int fd=open(file_path,O_CREAT |O_WRONLY | O_TRUNC, 0666);
+    getchar();
+    chmod(file_path, 0700);
+    return 0;
 }
